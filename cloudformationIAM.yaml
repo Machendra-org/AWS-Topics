@@ -1,0 +1,37 @@
+Parameters:
+  MyPass:
+    Type: String
+Resources:
+  MyIAMUser:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: machendraCF
+      LoginProfile:
+        Password: !Ref MyPass
+      Groups:
+        - !Sub '${MyIAMGroup}'
+    DependsOn: MyIAMGroup
+  MyIAMGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: machendraCF
+      Policies:
+        - PolicyName: MyVideoPolicy
+          PolicyDocument:
+             Statement:
+                - Effect: Allow
+                  Action:
+                    - s3:Get*
+                  Resource: "*"
+  MyTestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
